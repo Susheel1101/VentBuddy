@@ -1,18 +1,337 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vent Buddy - Your AI Companion</title>
+    <title>Vent Buddy - Your Personal AI Companion</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>🤗 Vent Buddy</h1>
-        <p>Your personal AI companion is being built...</p>
-        <div class="status">Setting up your digital sanctuary</div>
+    <!-- Landing Page -->
+    <div class="landing-page" id="landingPage">
+        <div class="cosmic-bg"></div>
+        <div class="stars"></div>
+        <div class="floating-elements">
+            <div class="floating-orb"></div>
+            <div class="floating-orb"></div>
+            <div class="floating-orb"></div>
+            <div class="floating-orb"></div>
+        </div>
+
+        <nav class="nav">
+            <a href="#" class="logo">VentBuddy</a>
+        </nav>
+
+        <div class="hero">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span>✨ AI-Powered Emotional Support</span>
+                </div>
+                
+                <h1 class="hero-title">Your Personal AI Companion for Life's Journey</h1>
+                
+                <p class="hero-subtitle">
+                    Meet your AI companion who remembers every conversation, learns your patterns, 
+                    and evolves with you. Build a genuine relationship that grows stronger over time.
+                </p>
+                
+                <!-- Interactive Feature Cards -->
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4"/>
+                                <circle cx="12" cy="12" r="9"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Perfect Memory</div>
+                        <div class="feature-desc">Never repeat yourself. Builds on every conversation.</div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Pattern Intelligence</div>
+                        <div class="feature-desc">Discovers your emotional triggers and patterns.</div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <circle cx="12" cy="16" r="1"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Completely Private</div>
+                        <div class="feature-desc">All conversations stay on your device only.</div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Evolves With You</div>
+                        <div class="feature-desc">Personality adapts to your communication style.</div>
+                    </div>
+                </div>
+                
+                <a href="#" class="hero-cta" onclick="startOnboarding()">
+                    <span>Create Your Companion</span>
+                    <svg class="cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
     </div>
+
+    <!-- Onboarding Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="onboarding-modal">
+            <!-- Step 1: Welcome -->
+            <div class="onboarding-step active" id="step1">
+                <div class="step-indicator">
+                    <div class="step-dot active"></div>
+                    <div class="step-dot"></div>
+                    <div class="step-dot"></div>
+                </div>
+                
+                <div class="step-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </div>
+                <h2 class="step-title">Welcome to VentBuddy</h2>
+                <p class="step-description">
+                    Let's create your personal AI companion who will understand, remember, and support you 
+                    through whatever life brings your way.
+                </p>
+                
+                <div class="modal-buttons">
+                    <button class="btn btn-primary" onclick="nextStep()">Let's Start</button>
+                    <button class="btn btn-secondary" onclick="closeModal()">Maybe Later</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Create Character -->
+            <div class="onboarding-step" id="step2">
+                <div class="step-indicator">
+                    <div class="step-dot active"></div>
+                    <div class="step-dot active"></div>
+                    <div class="step-dot"></div>
+                </div>
+                
+                <div class="step-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                </div>
+                <h2 class="step-title">Create Your Companion</h2>
+                <p class="step-description">
+                    Design your AI companion's appearance and give them a name. 
+                    Make them uniquely yours!
+                </p>
+                
+                <div class="character-creator">
+                    <div class="character-selection">
+                        <h3 class="selection-title">Choose Your Companion</h3>
+                        
+                        <div class="character-dropdown" id="characterDropdown">
+                            <div class="selected-character" id="selectedCharacter">
+                                <span class="character-emoji">🧑</span>
+                                <span class="character-name">Neutral</span>
+                                <span class="dropdown-arrow">▼</span>
+                            </div>
+                            
+                            <div class="character-options" id="characterOptions">
+                                <div class="character-option active" data-character="🧑" data-name="Neutral">
+                                    <span class="option-emoji">🧑</span>
+                                    <span class="option-name">Neutral</span>
+                                </div>
+                                <div class="character-option" data-character="👨" data-name="Boy">
+                                    <span class="option-emoji">👨</span>
+                                    <span class="option-name">Boy</span>
+                                </div>
+                                <div class="character-option" data-character="👩" data-name="Girl">
+                                    <span class="option-emoji">👩</span>
+                                    <span class="option-name">Girl</span>
+                                </div>
+                                <div class="character-option" data-character="🧔" data-name="Bearded">
+                                    <span class="option-emoji">🧔</span>
+                                    <span class="option-name">Bearded</span>
+                                </div>
+                                <div class="character-option" data-character="👱‍♀️" data-name="Blonde">
+                                    <span class="option-emoji">👱‍♀️</span>
+                                    <span class="option-name">Blonde</span>
+                                </div>
+                                <div class="character-option" data-character="👨‍🦱" data-name="Curly">
+                                    <span class="option-emoji">👨‍🦱</span>
+                                    <span class="option-name">Curly</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Companion Name</label>
+                        <input type="text" class="form-input" id="companionNameInput" placeholder="Alex" maxlength="20">
+                    </div>
+                </div>
+                
+                <div class="modal-buttons">
+                    <button class="btn btn-primary" onclick="nextStep()">Continue</button>
+                    <button class="btn btn-secondary" onclick="prevStep()">Back</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Ready to Start -->
+            <div class="onboarding-step" id="step3">
+                <div class="step-indicator">
+                    <div class="step-dot active"></div>
+                    <div class="step-dot active"></div>
+                    <div class="step-dot active"></div>
+                </div>
+                
+                <div class="step-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12l5 5L20 7"/>
+                    </svg>
+                </div>
+                <h2 class="step-title">You're All Set!</h2>
+                <p class="step-description">
+                    <span id="finalCompanionName">Alex</span> is ready to be your companion. 
+                    Start by sharing what's on your mind, and watch as your relationship grows over time.
+                </p>
+                
+                <div class="modal-buttons">
+                    <button class="btn btn-primary" onclick="startChatting()" id="startChattingBtn">
+                        <span>Start Chatting</span>
+                        <div class="loading-dots" style="display: none;">
+                            <div class="loading-dot"></div>
+                            <div class="loading-dot"></div>
+                            <div class="loading-dot"></div>
+                        </div>
+                    </button>
+                    <button class="btn btn-secondary" onclick="prevStep()">Back</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Interface -->
+    <div class="chat-interface" id="chatInterface">
+        <div class="chat-layout">
+            <!-- Companion Sidebar -->
+            <div class="companion-sidebar">
+                <div class="companion-header">
+                    <div class="companion-avatar-container" id="companionAvatarContainer">
+                        <div class="companion-avatar" id="companionAvatar">
+                            <div class="companion-character">🤖</div>
+                        </div>
+                        <div class="companion-status"></div>
+                    </div>
+                    
+                    <div class="companion-info">
+                        <div class="companion-name" id="companionName">Alex</div>
+                        <div class="companion-level" id="companionLevel">Empathetic Companion • Level 1</div>
+                        
+                        <div class="relationship-bar">
+                            <div class="relationship-progress" id="relationshipProgress" style="width: 15%"></div>
+                        </div>
+                        <div class="relationship-label" id="relationshipLabel">Building Trust • 15/100 XP</div>
+                    </div>
+                </div>
+
+                <div class="stats-section">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-number" id="totalConversations">0</span>
+                            <span class="stat-label">Conversations</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number" id="insightsShared">0</span>
+                            <span class="stat-label">Insights</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number" id="emotionsProcessed">0</span>
+                            <span class="stat-label">Emotions</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number" id="streakDays">1</span>
+                            <span class="stat-label">Day Streak</span>
+                        </div>
+                    </div>
+
+                    <div class="customization-panel">
+                        <div class="panel-title">Personality</div>
+                        <div class="personality-options">
+                            <button class="personality-btn active" data-personality="empathetic">Empathetic</button>
+                            <button class="personality-btn" data-personality="analytical">Analytical</button>
+                            <button class="personality-btn" data-personality="supportive">Supportive</button>
+                            <button class="personality-btn" data-personality="direct">Direct</button>
+                            <button class="personality-btn" data-personality="creative">Creative</button>
+                            <button class="personality-btn" data-personality="practical">Practical</button>
+                        </div>
+                    </div>
+
+                    <div class="customization-panel">
+                        <div class="panel-title">Companion Name</div>
+                        <input type="text" id="nameInput" class="message-input" value="Alex" maxlength="20" style="width: 100%; border-radius: 6px;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Chat Area -->
+            <div class="chat-container">
+                <div class="chat-header">
+                    <div class="chat-title">Private Conversation</div>
+                    <div class="chat-status">
+                        <div class="status-dot"></div>
+                        <span>Online & Ready</span>
+                    </div>
+                </div>
+
+                <div class="messages-container" id="messagesContainer">
+                    <!-- Messages will be populated here -->
+                </div>
+
+                <div class="input-container">
+                    <div class="mood-selector">
+                        <button class="mood-btn" data-mood="stressed">😤 Stressed</button>
+                        <button class="mood-btn" data-mood="anxious">😰 Anxious</button>
+                        <button class="mood-btn" data-mood="sad">😢 Sad</button>
+                        <button class="mood-btn" data-mood="frustrated">😠 Frustrated</button>
+                        <button class="mood-btn" data-mood="confused">🤔 Confused</button>
+                        <button class="mood-btn" data-mood="excited">🤩 Excited</button>
+                        <button class="mood-btn" data-mood="content">😊 Content</button>
+                        <button class="mood-btn" data-mood="neutral">💬 Just talking</button>
+                    </div>
+
+                    <div class="input-row">
+                        <textarea 
+                            id="messageInput" 
+                            class="message-input" 
+                            placeholder="What's on your mind?"
+                            rows="1"
+                        ></textarea>
+                        <button id="sendButton" class="send-btn">
+                            →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="js/app.js"></script>
 </body>
 </html>
