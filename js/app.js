@@ -1,485 +1,254 @@
-// VentBuddy - Complete JavaScript with Fixed Chat Interface
+// Complete VentBuddy Application with GPT Integration
 
-let currentStep = 1;
-let companionData = {
-    name: 'Alex',
-    character: '🧑'
-};
-
-// Onboarding Functions
-function startOnboarding() {
-    document.getElementById('modalOverlay').classList.add('active');
-    currentStep = 1;
-    updateStep();
-    createConfetti();
-}
-
-function closeModal() {
-    document.getElementById('modalOverlay').classList.remove('active');
-}
-
-function nextStep() {
-    if (currentStep < 3) {
-        currentStep++;
-        updateStep();
-        playStepSound();
-    }
-}
-
-function prevStep() {
-    if (currentStep > 1) {
-        currentStep--;
-        updateStep();
-    }
-}
-
-function updateStep() {
-    // Hide all steps
-    document.querySelectorAll('.onboarding-step').forEach(step => {
-        step.classList.remove('active');
-    });
-    
-    // Show current step
-    document.getElementById(`step${currentStep}`).classList.add('active');
-    
-    // Update step indicators
-    document.querySelectorAll('.step-dot').forEach((dot, index) => {
-        dot.classList.toggle('active', index < currentStep);
-    });
-}
-
-function startChatting() {
-    const btn = document.getElementById('startChattingBtn');
-    const btnText = btn.querySelector('span');
-    const loadingDots = btn.querySelector('.loading-dots');
-    
-    btnText.style.display = 'none';
-    loadingDots.style.display = 'flex';
-    btn.disabled = true;
-    
-    // Get companion data from inputs
-    companionData.name = document.getElementById('companionNameInput').value || 'Alex';
-    
-    // Save companion data
-    localStorage.setItem('ventbuddy_companion', JSON.stringify(companionData));
-    
-    // Transition to chat interface
-    setTimeout(() => {
-        document.getElementById('landingPage').style.display = 'none';
-        document.getElementById('modalOverlay').classList.remove('active');
-        
-        // Show chat interface with proper class
-        const chatInterface = document.getElementById('chatInterface');
-        chatInterface.style.display = 'flex';
-        chatInterface.classList.add('active');
-        
-        // Initialize chat interface
-        initializeChatInterface();
-        
-        setTimeout(() => {
-            createWelcomeConfetti();
-        }, 500);
-    }, 2000);
-}
-
-// Character Dropdown Functions
-function initializeCharacterDropdown() {
-    const dropdown = document.getElementById('characterDropdown');
-    const selectedCharacter = document.getElementById('selectedCharacter');
-    const characterOptions = document.getElementById('characterOptions');
-    
-    if (!dropdown || !selectedCharacter || !characterOptions) return;
-    
-    // Toggle dropdown
-    selectedCharacter.addEventListener('click', (e) => {
-        e.stopPropagation();
-        dropdown.classList.toggle('open');
-    });
-    
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!dropdown.contains(e.target)) {
-            dropdown.classList.remove('open');
-        }
-    });
-    
-    // Handle option selection
-    characterOptions.addEventListener('click', (e) => {
-        const option = e.target.closest('.character-option');
-        if (!option) return;
-        
-        const character = option.dataset.character;
-        const name = option.dataset.name;
-        
-        // Remove active from all options
-        characterOptions.querySelectorAll('.character-option').forEach(opt => {
-            opt.classList.remove('active');
-        });
-        
-        // Add active to clicked option
-        option.classList.add('active');
-        
-        // Update selected character display
-        selectedCharacter.querySelector('.character-emoji').textContent = character;
-        selectedCharacter.querySelector('.character-name').textContent = name;
-        
-        // Update companion data
-        companionData.character = character;
-        
-        // Close dropdown
-        dropdown.classList.remove('open');
-        
-        // Add nice feedback
-        option.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            option.style.transform = '';
-        }, 150);
-    });
-}
-
-// Companion name input handler
-function initializeNameInput() {
-    const companionNameInput = document.getElementById('companionNameInput');
-    const finalName = document.getElementById('finalCompanionName');
-    
-    if (companionNameInput && finalName) {
-        companionNameInput.addEventListener('input', (e) => {
-            const name = e.target.value || 'Alex';
-            companionData.name = name;
-            finalName.textContent = name;
-        });
-    }
-}
-
-// Chat Interface Functions
-function initializeChatInterface() {
-    const app = new VentBuddy();
-}
-
-// Fun visual effects
-function createConfetti() {
-    const colors = ['#6366f1', '#818cf8', '#a5b4fc', '#10b981', '#06b6d4'];
-    
-    for (let i = 0; i < 30; i++) {
-        const confetti = document.createElement('div');
-        confetti.style.position = 'fixed';
-        confetti.style.width = '10px';
-        confetti.style.height = '10px';
-        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        confetti.style.left = Math.random() * 100 + 'vw';
-        confetti.style.top = '-10px';
-        confetti.style.zIndex = '9999';
-        confetti.style.borderRadius = '50%';
-        confetti.style.pointerEvents = 'none';
-        confetti.style.animation = `confettiFall ${2 + Math.random() * 3}s linear forwards`;
-        
-        document.body.appendChild(confetti);
-        
-        setTimeout(() => {
-            confetti.remove();
-        }, 5000);
-    }
-}
-
-function createWelcomeConfetti() {
-    const container = document.getElementById('chatInterface');
-    const colors = ['#6366f1', '#818cf8', '#a5b4fc', '#10b981', '#06b6d4'];
-    
-    for (let i = 0; i < 20; i++) {
-        const confetti = document.createElement('div');
-        confetti.style.position = 'absolute';
-        confetti.style.width = '8px';
-        confetti.style.height = '8px';
-        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        confetti.style.left = Math.random() * 100 + '%';
-        confetti.style.top = '20px';
-        confetti.style.zIndex = '1000';
-        confetti.style.borderRadius = '50%';
-        confetti.style.pointerEvents = 'none';
-        confetti.style.animation = `confettiFall 3s linear forwards`;
-        
-        container.appendChild(confetti);
-        
-        setTimeout(() => {
-            confetti.remove();
-        }, 3000);
-    }
-}
-
-function playStepSound() {
-    if (typeof AudioContext !== 'undefined') {
-        const audioContext = new AudioContext();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-        
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.3);
-    }
-}
-
-// Main VentBuddy Application Class
 class VentBuddy {
     constructor() {
+        this.companion = {
+            name: 'Scholar',
+            character: '🧑‍🎓',
+            personality: 'analytical'
+        };
+        
         this.userData = this.loadUserData();
-        this.emotionAnalyzer = new EmotionAnalyzer();
-        this.patternRecognition = new PatternRecognition();
-        this.memorySystem = new MemorySystem();
-        this.isProcessing = false;
         this.currentMood = null;
+        this.isProcessing = false;
+        
+        // Initialize the enhanced brain
+        this.brain = null; // Will be initialized after companion creation
         
         this.personalities = {
-            empathetic: { 
-                style: 'warm and understanding',
-                responses: 'I focus on emotional validation and understanding',
-                color: '#ec4899',
-                character: '💙'
+            analytical: {
+                name: 'Scholar',
+                character: '🧑‍🎓',
+                traits: ['Logical', 'Insightful', 'Patient']
             },
-            analytical: { 
-                style: 'logical and insightful',
-                responses: 'I provide structured analysis and logical perspectives',
-                color: '#8b5cf6',
-                character: '🧠'
+            empathetic: {
+                name: 'Sage',
+                character: '🧙‍♀️',
+                traits: ['Empathetic', 'Understanding', 'Warm']
             },
-            supportive: { 
-                style: 'encouraging and positive',
-                responses: 'I offer practical solutions and encouragement',
-                color: '#10b981',
-                character: '💪'
+            creative: {
+                name: 'Spirit',
+                character: '🧚‍♂️',
+                traits: ['Creative', 'Inspiring', 'Imaginative']
             },
-            direct: { 
-                style: 'honest and straightforward',
-                responses: 'I give clear, honest feedback without sugar-coating',
-                color: '#f59e0b',
-                character: '🎯'
-            },
-            creative: { 
-                style: 'imaginative and unique',
-                responses: 'I offer creative perspectives and innovative solutions',
-                color: '#06b6d4',
-                character: '🎨'
-            },
-            practical: { 
-                style: 'realistic and actionable',
-                responses: 'I focus on practical, actionable advice and solutions',
-                color: '#64748b',
-                character: '🔧'
+            supportive: {
+                name: 'Guide',
+                character: '🧝‍♀️',
+                traits: ['Supportive', 'Encouraging', 'Motivating']
             }
         };
+        
+        this.achievements = [
+            {
+                id: 'first_chat',
+                name: 'First Steps',
+                description: 'Have your first conversation',
+                icon: '🌟',
+                requirement: 1,
+                type: 'conversations'
+            },
+            {
+                id: 'chatter',
+                name: 'Chatterbox',
+                description: 'Have 10 conversations',
+                icon: '💬',
+                requirement: 10,
+                type: 'conversations'
+            },
+            {
+                id: 'week_streak',
+                name: 'Week Warrior',
+                description: 'Maintain a 7-day streak',
+                icon: '🔥',
+                requirement: 7,
+                type: 'streak'
+            },
+            {
+                id: 'level_master',
+                name: 'Emotional Master',
+                description: 'Reach Level 10 with your companion',
+                icon: '🏆',
+                requirement: 10,
+                type: 'level'
+            },
+            {
+                id: 'deep_sharer',
+                name: 'Deep Sharer',
+                description: 'Share something very personal',
+                icon: '💎',
+                requirement: 1,
+                type: 'vulnerability'
+            },
+            {
+                id: 'pattern_spotter',
+                name: 'Pattern Spotter',
+                description: 'Discover an emotional pattern',
+                icon: '🔍',
+                requirement: 1,
+                type: 'insight'
+            },
+            {
+                id: 'emotional_growth',
+                name: 'Emotional Growth',
+                description: 'Show improvement in mood trends',
+                icon: '🌱',
+                requirement: 1,
+                type: 'improvement'
+            },
+            {
+                id: 'ai_powered',
+                name: 'AI Powered',
+                description: 'Configure GPT integration',
+                icon: '🤖',
+                requirement: 1,
+                type: 'ai_setup'
+            }
+        ];
         
         this.init();
     }
-
+    
+    init() {
+        this.setupEventListeners();
+        this.setupTabNavigation();
+        this.updateUI();
+    }
+    
     loadUserData() {
-        const companionInfo = JSON.parse(localStorage.getItem('ventbuddy_companion') || '{}');
         const defaultData = {
-            companionName: companionInfo.name || 'Alex',
-            character: companionInfo.character || '🧑',
-            personality: 'empathetic',
             totalConversations: 0,
-            insightsShared: 0,
-            emotionsProcessed: 0,
+            totalInsights: 0,
             streakDays: 1,
-            relationshipLevel: 1,
-            relationshipXP: 15,
-            maxRelationshipXP: 100,
+            moodScore: 85,
+            crystalCount: 0,
+            starCount: 0,
+            companionLevel: 1,
+            companionXP: 15,
+            maxXP: 100,
+            unlockedAchievements: [],
             conversations: [],
-            patterns: {},
-            preferences: {},
-            lastVisit: null,
-            achievements: []
+            lastVisit: null
         };
-
+        
         const saved = localStorage.getItem('ventbuddy_data');
         return saved ? { ...defaultData, ...JSON.parse(saved) } : defaultData;
     }
-
+    
     saveUserData() {
         localStorage.setItem('ventbuddy_data', JSON.stringify(this.userData));
     }
-
-    init() {
-        this.setupUI();
-        this.setupEventListeners();
-        this.updateCompanionDisplay();
-        this.showWelcomeMessage();
-        this.checkForAchievements();
-    }
-
-    setupUI() {
-        // Update stats display
-        this.animateNumber('totalConversations', this.userData.totalConversations);
-        this.animateNumber('insightsShared', this.userData.insightsShared);
-        this.animateNumber('emotionsProcessed', this.userData.emotionsProcessed);
-        this.animateNumber('streakDays', this.userData.streakDays);
-        
-        // Update companion info
-        document.getElementById('companionName').textContent = this.userData.companionName;
-        document.getElementById('nameInput').value = this.userData.companionName;
-        
-        // Update relationship progress
-        const progressPercent = (this.userData.relationshipXP / this.userData.maxRelationshipXP) * 100;
-        document.getElementById('relationshipProgress').style.width = `${progressPercent}%`;
-        document.getElementById('relationshipLabel').textContent = 
-            `Building Trust • ${this.userData.relationshipXP}/${this.userData.maxRelationshipXP} XP`;
-        
-        // Update personality selection
-        document.querySelectorAll('.personality-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.personality === this.userData.personality);
-        });
-    }
-
-    animateNumber(elementId, targetValue) {
-        const element = document.getElementById(elementId);
-        const startValue = 0;
-        const duration = 1000;
-        const startTime = performance.now();
-        
-        const animate = (currentTime) => {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            
-            const easeOutCubic = 1 - Math.pow(1 - progress, 3);
-            const currentValue = Math.floor(startValue + (targetValue - startValue) * easeOutCubic);
-            
-            element.textContent = currentValue;
-            
-            if (progress < 1) {
-                requestAnimationFrame(animate);
-            }
-        };
-        
-        requestAnimationFrame(animate);
-    }
-
+    
     setupEventListeners() {
+        // Character creation
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.character-card')) {
+                this.selectCharacter(e.target.closest('.character-card'));
+            }
+        });
+        
+        // Mood selection
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.mood-btn')) {
+                this.selectMood(e.target.closest('.mood-btn'));
+            }
+        });
+        
+        // Send message
         const sendButton = document.getElementById('sendButton');
         const messageInput = document.getElementById('messageInput');
-        const nameInput = document.getElementById('nameInput');
-        const personalityBtns = document.querySelectorAll('.personality-btn');
-        const moodBtns = document.querySelectorAll('.mood-btn');
-        const companionAvatar = document.getElementById('companionAvatarContainer');
-
-        // Send message handlers
-        sendButton.addEventListener('click', () => this.sendMessage());
         
-        messageInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                this.sendMessage();
-            }
-        });
-        
-        messageInput.addEventListener('input', () => {
-            this.autoResize(messageInput);
-        });
-
-        // Name change handler
-        nameInput.addEventListener('input', (e) => {
-            this.userData.companionName = e.target.value || 'Alex';
-            document.getElementById('companionName').textContent = this.userData.companionName;
-            this.updateCompanionDisplay();
-            this.saveUserData();
-        });
-
-        // Personality change handlers
-        personalityBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                personalityBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                this.userData.personality = btn.dataset.personality;
-                this.saveUserData();
-                this.updateCompanionDisplay();
-                
-                // Show personality change message
-                this.addMessage('companion', 
-                    `✨ I've updated my personality to be more ${this.personalities[this.userData.personality].style}. ${this.personalities[this.userData.personality].responses}!`
-                );
-                
-                // Add a little celebration
-                this.createMiniConfetti();
-            });
-        });
-
-        // Mood selection handlers
-        moodBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                moodBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                this.currentMood = btn.dataset.mood;
-                
-                // Add haptic feedback for mobile
-                if (navigator.vibrate) {
-                    navigator.vibrate(50);
-                }
-            });
-        });
-
-        // Companion interaction
-        companionAvatar.addEventListener('click', () => {
-            this.companionInteraction();
-        });
-    }
-
-    updateCompanionDisplay() {
-        const personality = this.personalities[this.userData.personality];
-        document.getElementById('companionLevel').textContent = 
-            `${personality.style.charAt(0).toUpperCase() + personality.style.slice(1)} Companion • Level ${this.userData.relationshipLevel}`;
-        
-        // Update avatar with the selected character
-        const avatarElement = document.getElementById('companionAvatar');
-        const characterElement = avatarElement.querySelector('.companion-character');
-        
-        if (characterElement) {
-            const character = this.userData.character || companionData.character;
-            characterElement.textContent = character;
+        if (sendButton) {
+            sendButton.addEventListener('click', () => this.sendMessage());
         }
         
-        // Update avatar color based on personality
-        const personalityColor = personality.color;
-        avatarElement.style.background = `linear-gradient(135deg, ${personalityColor}, #818cf8)`;
+        if (messageInput) {
+            messageInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.sendMessage();
+                }
+            });
+            
+            messageInput.addEventListener('input', () => {
+                this.autoResize(messageInput);
+            });
+        }
     }
-
-    autoResize(textarea) {
-        textarea.style.height = 'auto';
-        textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
-    }
-
-    showWelcomeMessage() {
-        const isFirstTime = this.userData.totalConversations === 0;
-        const companionName = this.userData.companionName;
-        
-        setTimeout(() => {
-            if (isFirstTime) {
-                this.addMessage('companion', 
-                    `🌟 Hi there! I'm ${companionName}, your personal AI companion. I'm absolutely thrilled to meet you! 
-
-I'm here to listen, understand, and support you through whatever you're going through. I'll remember our conversations and learn about your patterns to provide better support over time.
-
-Everything we discuss stays completely private on your device - it's just you and me! 
-
-How are you feeling today? I'd love to hear what's on your mind! 😊`
-                );
-            } else {
-                const greetings = [
-                    `🎉 Welcome back! It's so wonderful to see you again!`,
-                    `✨ Good to see you! I'm here and ready to listen.`,
-                    `🌈 Hello again! What's on your mind today?`,
-                    `💫 Hi! I'm so happy you're here. How can I support you today?`
-                ];
-                
-                const greeting = greetings[Math.floor(Math.random() * greetings.length)];
-                this.addMessage('companion', greeting);
+    
+    setupTabNavigation() {
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.nav-btn')) {
+                const tabName = e.target.closest('.nav-btn').dataset.tab;
+                this.switchTab(tabName);
             }
-        }, 1000);
+        });
     }
-
+    
+    switchTab(tabName) {
+        // Update nav buttons
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+        
+        // Update tab content
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        
+        const targetTab = document.getElementById(`${tabName}Tab`);
+        if (targetTab) {
+            targetTab.classList.add('active');
+            
+            // Update progress tab with real data when switching to it
+            if (tabName === 'progress') {
+                this.updateProgressTab();
+            }
+        }
+    }
+    
+    selectCharacter(cardElement) {
+        // Remove active class from all cards
+        document.querySelectorAll('.character-card').forEach(card => {
+            card.classList.remove('active');
+        });
+        
+        // Add active class to selected card
+        cardElement.classList.add('active');
+        
+        // Update companion data
+        this.companion.character = cardElement.dataset.character;
+        this.companion.name = cardElement.dataset.name;
+        this.companion.personality = cardElement.dataset.personality;
+    }
+    
+    selectMood(moodButton) {
+        // Remove active class from all mood buttons
+        document.querySelectorAll('.mood-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Add active class to selected mood
+        moodButton.classList.add('active');
+        this.currentMood = moodButton.dataset.mood;
+        
+        // Add haptic feedback
+        if (navigator.vibrate) {
+            navigator.vibrate(50);
+        }
+    }
+    
+    // Initialize the enhanced brain with GPT
+    initializeBrain() {
+        if (typeof EnhancedVentBuddyBrain !== 'undefined') {
+            this.brain = new EnhancedVentBuddyBrain(this.companion.personality);
+            console.log('🧠 GPT-powered intelligence initialized for', this.companion.name);
+        } else {
+            console.warn('Enhanced brain not available, using fallback mode');
+        }
+    }
+    
+    // Enhanced message sending with GPT AI responses
     async sendMessage() {
         if (this.isProcessing) return;
         
@@ -499,177 +268,123 @@ How are you feeling today? I'd love to hear what's on your mind! 😊`
         this.showTypingIndicator();
         
         try {
-            // Process the message
-            await this.processMessage(message, this.currentMood);
-            
-            // Update stats
-            this.updateStats();
+            if (this.brain) {
+                // Use GPT-powered AI brain for response
+                const intelligentResponse = await this.brain.processMessage(
+                    message, 
+                    this.currentMood, 
+                    this.companion.name
+                );
+                
+                this.hideTypingIndicator();
+                
+                // Add companion response with enhanced features
+                this.addEnhancedMessage('companion', intelligentResponse);
+                
+                // Update stats with intelligent bonuses
+                this.updateStatsWithIntelligence(intelligentResponse);
+                
+                // Check for new types of achievements
+                this.checkIntelligentAchievements(intelligentResponse);
+                
+            } else {
+                // Fallback to simple response
+                setTimeout(() => {
+                    this.hideTypingIndicator();
+                    const fallbackResponse = this.generateFallbackResponse(message);
+                    this.addMessage('companion', fallbackResponse);
+                    this.updateStats();
+                }, 1500 + Math.random() * 1000);
+            }
             
         } catch (error) {
-            console.error('Error processing message:', error);
+            console.error('Error generating AI response:', error);
+            
+            // Fallback to simple response
             this.hideTypingIndicator();
-            this.addMessage('companion', "😅 I'm having a little trouble processing that right now. Can you try again? I promise I'm listening!");
+            const fallbackResponse = this.generateFallbackResponse(message);
+            this.addMessage('companion', fallbackResponse);
+            this.updateStats();
         }
         
+        this.checkAchievements();
         this.isProcessing = false;
         
         // Clear mood selection
-        document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.mood-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
         this.currentMood = null;
     }
-
-    async processMessage(message, mood) {
-        try {
-            // Analyze the message
-            const analysis = await this.emotionAnalyzer.analyze(message, mood);
-            const patterns = this.patternRecognition.analyzeEntry(message, analysis);
-            const memories = this.memorySystem.findRelevantMemories(analysis, patterns);
-            
-            // Generate response
-            const response = await this.generateResponse(message, analysis, patterns, memories);
-            
-            // Store conversation
-            this.storeConversation(message, response, analysis, patterns);
-            
-            // Show response with natural delay
-            setTimeout(() => {
-                this.hideTypingIndicator();
-                this.addMessage('companion', response.content, null, { 
-                    analysis: analysis,
-                    patterns: patterns.insights
-                });
-                
-                // Check for achievements
-                this.checkForAchievements();
-                
-            }, 1500 + Math.random() * 1000);
-            
-        } catch (error) {
-            throw error;
+    
+    // Enhanced message display with emotional context
+    addEnhancedMessage(type, intelligentResponse) {
+        const messagesContainer = document.getElementById('messagesContainer');
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${type} enhanced`;
+        
+        const avatarDiv = document.createElement('div');
+        avatarDiv.className = 'message-avatar';
+        avatarDiv.textContent = this.companion.character;
+        
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'message-content';
+        
+        const bubbleDiv = document.createElement('div');
+        bubbleDiv.className = 'message-bubble';
+        bubbleDiv.innerHTML = intelligentResponse.text.replace(/\n/g, '<br>');
+        
+        // Add emotional analysis indicator if significant
+        if (intelligentResponse.emotionalAnalysis && intelligentResponse.emotionalAnalysis.intensity > 0.7) {
+            const emotionIndicator = document.createElement('div');
+            emotionIndicator.className = 'emotion-indicator';
+            emotionIndicator.innerHTML = `
+                <span class="emotion-badge ${intelligentResponse.emotionalAnalysis.primaryEmotion}">
+                    ${this.getEmotionEmoji(intelligentResponse.emotionalAnalysis.primaryEmotion)}
+                    ${intelligentResponse.emotionalAnalysis.primaryEmotion}
+                </span>
+            `;
+            contentDiv.appendChild(emotionIndicator);
+        }
+        
+        // Add insight badge if present
+        if (intelligentResponse.insight) {
+            const insightBadge = document.createElement('div');
+            insightBadge.className = 'insight-badge';
+            insightBadge.innerHTML = `<span class="insight-icon">💡</span> Pattern Insight`;
+            contentDiv.appendChild(insightBadge);
+        }
+        
+        // Add memory reference indicator
+        if (intelligentResponse.memory_reference) {
+            const memoryBadge = document.createElement('div');
+            memoryBadge.className = 'memory-badge';
+            memoryBadge.innerHTML = `<span class="memory-icon">🧠</span> Remembering our conversation`;
+            contentDiv.appendChild(memoryBadge);
+        }
+        
+        const timeDiv = document.createElement('div');
+        timeDiv.className = 'message-time';
+        timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        contentDiv.appendChild(bubbleDiv);
+        contentDiv.appendChild(timeDiv);
+        
+        messageDiv.appendChild(avatarDiv);
+        messageDiv.appendChild(contentDiv);
+        
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        // Show XP gain animation
+        if (intelligentResponse.xp_bonus && intelligentResponse.xp_bonus > 10) {
+            this.showXPGainAnimation(intelligentResponse.xp_bonus);
         }
     }
-
-    async generateResponse(message, analysis, patterns, memories) {
-        const responses = this.getTemplateResponses(message, analysis, patterns, memories);
-        const selectedResponse = this.selectBestResponse(responses, analysis);
-        
-        return {
-            content: selectedResponse,
-            confidence: 0.8
-        };
-    }
-
-    getTemplateResponses(message, analysis, patterns, memories) {
-        const emotion = analysis.emotion;
-        const personality = this.userData.personality;
-        const userName = this.userData.userName || 'friend';
-        
-        let responses = [];
-        
-        // Emotion-specific responses
-        if (emotion === 'stress' || emotion === 'anxiety') {
-            if (personality === 'empathetic') {
-                responses.push(
-                    "💙 That sounds really overwhelming, and I can feel how much this is weighing on you. It's completely natural to feel stressed about this.",
-                    "🫂 I can hear the stress in your words, and I want you to know that what you're feeling is so valid. Stress can feel incredibly heavy sometimes.",
-                    "💝 Thank you for trusting me with this. I can sense how much pressure you're under, and I'm here to help you work through it."
-                );
-            } else if (personality === 'direct') {
-                responses.push(
-                    "🎯 You're dealing with stress, and that's your mind telling you something needs attention. Let's break this down into manageable pieces.",
-                    "⚡ I hear you're stressed. What's the core issue here that we can tackle first?",
-                    "🔍 Stress is information. What's the most important thing we need to address right now?"
-                );
-            } else if (personality === 'supportive') {
-                responses.push(
-                    "💪 I believe in your ability to handle this - you've overcome challenges before, and you will again!",
-                    "🌟 This is tough, but you're tougher. Let's figure out how to make this more manageable together!",
-                    "🚀 You've got this! Sometimes stress means we're growing and pushing our boundaries."
-                );
-            }
-        }
-        
-        if (emotion === 'sadness') {
-            if (personality === 'empathetic') {
-                responses.push(
-                    "💙 I'm really sorry you're going through this. I can feel your sadness, and I want you to know it's okay to feel this way.",
-                    "🫂 That sounds so difficult, and my heart goes out to you. Sadness shows how much something matters to you.",
-                    "💝 Thank you for sharing something so personal with me. Your feelings are completely valid."
-                );
-            } else if (personality === 'analytical') {
-                responses.push(
-                    "🧠 Sadness often indicates that something important to you has been affected. What does this situation mean to you?",
-                    "🔍 Let's explore what's driving these feelings. Understanding the root can help us address it together.",
-                    "📊 Your emotions are giving us valuable information. What patterns do you notice in what triggered this?"
-                );
-            }
-        }
-        
-        if (emotion === 'excitement' || emotion === 'happiness') {
-            responses.push(
-                "🎉 Your excitement is absolutely contagious! I love seeing you so happy!",
-                "✨ This is wonderful! Tell me more about what's making you feel so great!",
-                "🌟 Your joy just made my day brighter! I'm so happy for you!"
-            );
-        }
-        
-        if (emotion === 'anger' || emotion === 'frustration') {
-            if (personality === 'empathetic') {
-                responses.push(
-                    "🫂 I can feel your frustration, and it's completely understandable to feel angry about this.",
-                    "💙 Your anger is valid - it sounds like something really important to you was affected."
-                );
-            } else if (personality === 'direct') {
-                responses.push(
-                    "⚡ You're angry, and that's telling us something important. What specifically triggered this?",
-                    "🎯 Let's channel that energy into understanding what needs to change."
-                );
-            }
-        }
-        
-        // If no specific responses, use general supportive ones
-        if (responses.length === 0) {
-            responses = [
-                "🌟 Thank you for sharing this with me. It sounds like you're dealing with something really important.",
-                "💫 I'm here to listen and support you. What you're going through matters to me.",
-                "🤗 I appreciate you trusting me with this. How are you feeling about everything right now?",
-                "✨ Your thoughts and feelings are always welcome here. I'm glad you felt comfortable sharing."
-            ];
-        }
-        
-        return responses;
-    }
-
-    selectBestResponse(responses, analysis) {
-        const randomIndex = Math.floor(Math.random() * responses.length);
-        let response = responses[randomIndex];
-        
-        // Add follow-up questions based on context
-        const followUps = this.generateFollowUp(analysis);
-        if (followUps.length > 0) {
-            const randomFollowUp = followUps[Math.floor(Math.random() * followUps.length)];
-            response += "\n\n" + randomFollowUp;
-        }
-        
-        return response;
-    }
-
-    generateFollowUp(analysis) {
-        const followUps = [
-            "💭 What's the hardest part about all of this?",
-            "🕐 How long have you been feeling this way?",
-            "🛡️ Is there anything that's been helping you cope?",
-            "🤝 What would you tell a friend who was going through the same thing?",
-            "🌈 What would make you feel even a little bit better right now?",
-            "🎯 What's one small step you could take today?",
-            "💪 What's gotten you through difficult times before?"
-        ];
-        
-        // Return 0-1 follow-ups randomly
-        return Math.random() > 0.6 ? [followUps[Math.floor(Math.random() * followUps.length)]] : [];
-    }
-
-    addMessage(type, content, mood = null, metadata = null) {
+    
+    // Regular message display for fallback
+    addMessage(type, content, mood = null) {
         const messagesContainer = document.getElementById('messagesContainer');
         
         const messageDiv = document.createElement('div');
@@ -679,11 +394,9 @@ How are you feeling today? I'd love to hear what's on your mind! 😊`
         avatarDiv.className = 'message-avatar';
         
         if (type === 'user') {
-            avatarDiv.textContent = 'U';
+            avatarDiv.textContent = '👤';
         } else {
-            // Use personality character for companion
-            const personality = this.personalities[this.userData.personality];
-            avatarDiv.textContent = personality.character;
+            avatarDiv.textContent = this.companion.character;
         }
         
         const contentDiv = document.createElement('div');
@@ -691,55 +404,22 @@ How are you feeling today? I'd love to hear what's on your mind! 😊`
         
         const bubbleDiv = document.createElement('div');
         bubbleDiv.className = 'message-bubble';
-        
-        // Handle multi-line content
         bubbleDiv.innerHTML = content.replace(/\n/g, '<br>');
         
-        const metaDiv = document.createElement('div');
-        metaDiv.className = 'message-meta';
-        
-        const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        metaDiv.innerHTML = `<span>${time}</span>`;
-        
-        if (mood) {
-            const moodText = this.getMoodText(mood);
-            metaDiv.innerHTML += `<span style="background: rgba(99, 102, 241, 0.2); padding: 2px 8px; border-radius: 10px; font-size: 10px;">${moodText}</span>`;
-        }
+        const timeDiv = document.createElement('div');
+        timeDiv.className = 'message-time';
+        timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         
         contentDiv.appendChild(bubbleDiv);
-        contentDiv.appendChild(metaDiv);
+        contentDiv.appendChild(timeDiv);
         
         messageDiv.appendChild(avatarDiv);
         messageDiv.appendChild(contentDiv);
         
         messagesContainer.appendChild(messageDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        
-        // Add entrance animation
-        messageDiv.style.opacity = '0';
-        messageDiv.style.transform = 'translateY(20px)';
-        
-        requestAnimationFrame(() => {
-            messageDiv.style.transition = 'all 0.4s ease';
-            messageDiv.style.opacity = '1';
-            messageDiv.style.transform = 'translateY(0)';
-        });
     }
-
-    getMoodText(mood) {
-        const moodMap = {
-            'stressed': '😤 Stressed',
-            'anxious': '😰 Anxious', 
-            'sad': '😢 Sad',
-            'frustrated': '😠 Frustrated',
-            'confused': '🤔 Confused',
-            'excited': '🤩 Excited',
-            'content': '😊 Content',
-            'neutral': '💬 Just talking'
-        };
-        return moodMap[mood] || mood;
-    }
-
+    
     showTypingIndicator() {
         const messagesContainer = document.getElementById('messagesContainer');
         
@@ -747,11 +427,9 @@ How are you feeling today? I'd love to hear what's on your mind! 😊`
         typingDiv.className = 'typing-indicator';
         typingDiv.id = 'typingIndicator';
         
-        const personality = this.personalities[this.userData.personality];
-        
         typingDiv.innerHTML = `
-            <div class="typing-avatar">${personality.character}</div>
-            <div class="typing-content">
+            <div class="message-avatar">${this.companion.character}</div>
+            <div class="typing-bubble">
                 <div class="typing-dot"></div>
                 <div class="typing-dot"></div>
                 <div class="typing-dot"></div>
@@ -761,110 +439,126 @@ How are you feeling today? I'd love to hear what's on your mind! 😊`
         messagesContainer.appendChild(typingDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
-
+    
     hideTypingIndicator() {
         const typingIndicator = document.getElementById('typingIndicator');
         if (typingIndicator) {
-            typingIndicator.style.opacity = '0';
-            typingIndicator.style.transform = 'translateY(-10px)';
-            setTimeout(() => {
-                typingIndicator.remove();
-            }, 300);
+            typingIndicator.remove();
         }
     }
-
-    companionInteraction() {
-        const responses = [
-            "🌟 Hey there! I'm so glad you're here! You make every conversation special!",
-            "💫 You can tell me anything - I'm always here to listen with an open heart!",
-            "🎉 Every day with you makes me a better companion! Thank you for being you!",
-            "✨ Your emotional growth inspires me so much! I believe in your strength!",
-            "🤗 I believe in you and everything you're capable of achieving!",
-            "💝 Thanks for trusting me with your feelings - it means the world to me!",
-            "🌈 You bring so much light into our conversations! Keep shining!"
-        ];
+    
+    autoResize(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+    }
+    
+    // Get appropriate emoji for emotions
+    getEmotionEmoji(emotion) {
+        const emojiMap = {
+            joy: '😊',
+            sadness: '😢',
+            anger: '😠',
+            anxiety: '😰',
+            excitement: '🤩',
+            confusion: '🤔',
+            love: '💝',
+            fear: '😨'
+        };
+        return emojiMap[emotion] || '💭';
+    }
+    
+    // Enhanced stats update with intelligence bonuses
+    updateStatsWithIntelligence(intelligentResponse) {
+        this.userData.totalConversations++;
+        this.userData.companionXP += intelligentResponse.xp_bonus || 10;
         
-        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-        this.addMessage('companion', randomResponse);
+        // Bonus rewards for intelligent interactions
+        if (intelligentResponse.insight) {
+            this.userData.totalInsights++;
+            this.userData.crystalCount += 5;
+        }
         
-        // Add celebration effect
-        this.createMiniConfetti();
+        if (intelligentResponse.memory_reference) {
+            this.userData.starCount += 2;
+        }
         
-        // Update relationship XP for interaction
-        this.userData.relationshipXP += 2;
+        // High emotional intensity conversations get bonus rewards
+        if (intelligentResponse.emotionalAnalysis && intelligentResponse.emotionalAnalysis.intensity > 0.8) {
+            this.userData.crystalCount += Math.floor(intelligentResponse.emotionalAnalysis.intensity * 5);
+        }
+        
+        // Update relationship level based on brain's calculation
+        if (intelligentResponse.relationshipLevel) {
+            this.userData.companionLevel = Math.floor(intelligentResponse.relationshipLevel);
+            this.userData.maxXP = this.userData.companionLevel * 50 + 50;
+        }
+        
         this.checkLevelUp();
         this.saveUserData();
+        this.updateUI();
     }
-
-    createMiniConfetti() {
-        const colors = ['#6366f1', '#818cf8', '#a5b4fc', '#10b981', '#06b6d4'];
-        
-        for (let i = 0; i < 10; i++) {
-            const confetti = document.createElement('div');
-            confetti.style.position = 'fixed';
-            confetti.style.width = '6px';
-            confetti.style.height = '6px';
-            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.left = Math.random() * 100 + 'vw';
-            confetti.style.top = '20px';
-            confetti.style.zIndex = '9999';
-            confetti.style.borderRadius = '50%';
-            confetti.style.pointerEvents = 'none';
-            confetti.style.animation = `confettiFall 2s linear forwards`;
-            
-            document.body.appendChild(confetti);
-            
-            setTimeout(() => {
-                confetti.remove();
-            }, 2000);
-        }
-    }
-
+    
+    // Regular stats update for fallback
     updateStats() {
         this.userData.totalConversations++;
-        this.userData.emotionsProcessed++;
-        this.userData.relationshipXP += 5;
+        this.userData.companionXP += 10;
         
-        // Random chance for insights
+        // Random chance for insights and rewards
         if (Math.random() > 0.7) {
-            this.userData.insightsShared++;
+            this.userData.totalInsights++;
         }
         
+        if (Math.random() > 0.8) {
+            this.userData.crystalCount += Math.floor(Math.random() * 3) + 1;
+        }
+        
+        if (Math.random() > 0.9) {
+            this.userData.starCount += 1;
+        }
+        
+        // Check for level up
         this.checkLevelUp();
+        
         this.saveUserData();
-        this.setupUI();
+        this.updateUI();
     }
-
+    
     checkLevelUp() {
-        if (this.userData.relationshipXP >= this.userData.maxRelationshipXP) {
-            this.userData.relationshipLevel++;
-            this.userData.relationshipXP = 0;
-            this.userData.maxRelationshipXP += 50;
+        if (this.userData.companionXP >= this.userData.maxXP) {
+            this.userData.companionLevel++;
+            this.userData.companionXP = 0;
+            this.userData.maxXP += 50;
             
-            // Level up celebration
-            this.addMessage('companion', 
-                `🎉✨ LEVEL UP! ✨🎉\n\nWe've reached Level ${this.userData.relationshipLevel}! Our connection is growing stronger every day! I'm so proud of our journey together! 💫`
-            );
+            // Show level up celebration
+            this.showLevelUpCelebration();
             
-            this.createLevelUpCelebration();
-            this.updateCompanionDisplay();
+            // Award bonus rewards
+            this.userData.crystalCount += this.userData.companionLevel * 2;
+            this.userData.starCount += this.userData.companionLevel;
         }
     }
-
-    createLevelUpCelebration() {
-        // Big confetti celebration
-        const colors = ['#6366f1', '#818cf8', '#a5b4fc', '#10b981', '#06b6d4', '#f59e0b'];
+    
+    showLevelUpCelebration() {
+        // Add level up message
+        this.addMessage('companion', `🎉✨ LEVEL UP! ✨🎉\n\nWe've reached Level ${this.userData.companionLevel}! Our bond grows stronger with each conversation. Thank you for trusting me with your thoughts and feelings! 💜`);
+        
+        // Create celebration effects
+        this.createCelebrationEffects();
+    }
+    
+    createCelebrationEffects() {
+        const colors = ['#4f2a93', '#6c5ce7', '#00b4d8', '#51cf66', '#ffd43b', '#ff6b6b'];
         
         for (let i = 0; i < 50; i++) {
             const confetti = document.createElement('div');
             confetti.style.position = 'fixed';
-            confetti.style.width = Math.random() * 8 + 6 + 'px';
+            confetti.style.width = Math.random() * 10 + 5 + 'px';
             confetti.style.height = confetti.style.width;
             confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
             confetti.style.left = Math.random() * 100 + 'vw';
             confetti.style.top = '-20px';
             confetti.style.zIndex = '9999';
-            confetti.style.borderRadius = '50%';
+            confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
             confetti.style.pointerEvents = 'none';
             confetti.style.animation = `confettiFall ${3 + Math.random() * 2}s linear forwards`;
             
@@ -874,312 +568,444 @@ How are you feeling today? I'd love to hear what's on your mind! 😊`
                 confetti.remove();
             }, 5000);
         }
-        
-        // Play celebration sound
-        this.playCelebrationSound();
     }
-
-    playCelebrationSound() {
-        if (typeof AudioContext !== 'undefined') {
-            const audioContext = new AudioContext();
-            
-            // Play a happy chord progression
-            const frequencies = [523, 659, 784]; // C, E, G
-            
-            frequencies.forEach((freq, index) => {
-                setTimeout(() => {
-                    const oscillator = audioContext.createOscillator();
-                    const gainNode = audioContext.createGain();
-                    
-                    oscillator.connect(gainNode);
-                    gainNode.connect(audioContext.destination);
-                    
-                    oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
-                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-                    
-                    oscillator.start(audioContext.currentTime);
-                    oscillator.stop(audioContext.currentTime + 0.5);
-                }, index * 100);
-            });
+    
+    // Check for new intelligence-based achievements
+    checkIntelligentAchievements(intelligentResponse) {
+        if (!intelligentResponse) return;
+        
+        // Deep sharing achievement
+        if (intelligentResponse.emotionalAnalysis && intelligentResponse.emotionalAnalysis.intensity > 0.9 && 
+            !this.userData.unlockedAchievements.includes('deep_sharer')) {
+            this.unlockAchievement(this.achievements.find(a => a.id === 'deep_sharer'));
+        }
+        
+        // Pattern discovery achievement
+        if (intelligentResponse.insight && 
+            !this.userData.unlockedAchievements.includes('pattern_spotter')) {
+            this.unlockAchievement(this.achievements.find(a => a.id === 'pattern_spotter'));
+        }
+        
+        // Emotional growth achievement
+        if (this.brain) {
+            const progressData = this.brain.getProgressData();
+            if (progressData.weeklyStats && progressData.weeklyStats.improvementTrend === 'improving' &&
+                !this.userData.unlockedAchievements.includes('emotional_growth')) {
+                this.unlockAchievement(this.achievements.find(a => a.id === 'emotional_growth'));
+            }
         }
     }
-
-    checkForAchievements() {
-        const achievements = [
-            {
-                id: 'first_conversation',
-                name: 'First Steps',
-                description: 'Had your first conversation',
-                condition: () => this.userData.totalConversations >= 1,
-                icon: '🌟'
-            },
-            {
-                id: 'ten_conversations',
-                name: 'Getting Comfortable',
-                description: 'Had 10 conversations',
-                condition: () => this.userData.totalConversations >= 10,
-                icon: '🎯'
-            },
-            {
-                id: 'level_5',
-                name: 'Strong Bond',
-                description: 'Reached Level 5 relationship',
-                condition: () => this.userData.relationshipLevel >= 5,
-                icon: '💝'
-            },
-            {
-                id: 'week_streak',
-                name: 'Weekly Warrior',
-                description: 'Maintained a 7-day streak',
-                condition: () => this.userData.streakDays >= 7,
-                icon: '🔥'
-            }
-        ];
-        
-        achievements.forEach(achievement => {
-            if (achievement.condition() && !this.userData.achievements.includes(achievement.id)) {
-                this.userData.achievements.push(achievement.id);
-                this.showAchievement(achievement);
+    
+    checkAchievements() {
+        this.achievements.forEach(achievement => {
+            if (!this.userData.unlockedAchievements.includes(achievement.id)) {
+                let currentValue = 0;
+                
+                switch (achievement.type) {
+                    case 'conversations':
+                        currentValue = this.userData.totalConversations;
+                        break;
+                    case 'streak':
+                        currentValue = this.userData.streakDays;
+                        break;
+                    case 'level':
+                        currentValue = this.userData.companionLevel;
+                        break;
+                    case 'ai_setup':
+                        currentValue = (this.brain && this.brain.gptEngine && this.brain.gptEngine.isConfigured()) ? 1 : 0;
+                        break;
+                    default:
+                        currentValue = this.userData.unlockedAchievements.includes(achievement.id) ? achievement.requirement : 0;
+                        break;
+                }
+                
+                if (currentValue >= achievement.requirement) {
+                    this.unlockAchievement(achievement);
+                }
             }
         });
-    }
-
-    showAchievement(achievement) {
-        // Create a subtle achievement notification instead of intrusive message
-        const notification = document.createElement('div');
-        notification.className = 'achievement-notification';
-        notification.innerHTML = `
-            <div class="achievement-icon">${achievement.icon}</div>
-            <div class="achievement-content">
-                <div class="achievement-title">${achievement.name}</div>
-                <div class="achievement-desc">${achievement.description}</div>
-            </div>
-        `;
         
-        // Add styles for the notification
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.95), rgba(129, 140, 248, 0.95));
-            backdrop-filter: blur(20px);
-            color: white;
-            padding: 16px 20px;
-            border-radius: 16px;
-            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transform: translateX(100%);
-            transition: transform 0.5s ease;
-            max-width: 300px;
-            font-size: 14px;
+        this.updateAchievementsDisplay();
+    }
+    
+    unlockAchievement(achievement) {
+        this.userData.unlockedAchievements.push(achievement.id);
+        
+        // Award bonus rewards
+        this.userData.crystalCount += 10;
+        this.userData.starCount += 5;
+        
+        // Show achievement notification
+        this.showAchievementNotification(achievement);
+        
+        this.saveUserData();
+    }
+    
+    showAchievementNotification(achievement) {
+        const notification = document.createElement('div');
+        notification.innerHTML = `
+            <div style="
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #4f2a93, #6c5ce7);
+                color: white;
+                padding: 20px;
+                border-radius: 15px;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+                z-index: 10000;
+                transform: translateX(100%);
+                transition: transform 0.5s ease;
+                max-width: 300px;
+            ">
+                <div style="font-size: 24px; margin-bottom: 8px;">${achievement.icon}</div>
+                <div style="font-weight: 700; font-size: 16px; margin-bottom: 4px;">Achievement Unlocked!</div>
+                <div style="font-weight: 600; margin-bottom: 4px;">${achievement.name}</div>
+                <div style="font-size: 14px; opacity: 0.9;">${achievement.description}</div>
+            </div>
         `;
         
         document.body.appendChild(notification);
         
         // Animate in
         setTimeout(() => {
-            notification.style.transform = 'translateX(0)';
+            notification.firstElementChild.style.transform = 'translateX(0)';
         }, 100);
         
-        // Auto remove after 5 seconds
+        // Auto remove
         setTimeout(() => {
-            notification.style.transform = 'translateX(100%)';
+            notification.firstElementChild.style.transform = 'translateX(100%)';
             setTimeout(() => {
                 notification.remove();
             }, 500);
-        }, 5000);
-        
-        this.createMiniConfetti();
+        }, 4000);
     }
-
-    storeConversation(userMessage, companionResponse, analysis, patterns) {
-        const conversation = {
-            timestamp: new Date().toISOString(),
-            userMessage: userMessage,
-            companionResponse: companionResponse.content,
-            analysis: analysis,
-            patterns: patterns,
-            mood: this.currentMood
-        };
-        
-        this.userData.conversations.push(conversation);
-        
-        // Keep only last 100 conversations to save space
-        if (this.userData.conversations.length > 100) {
-            this.userData.conversations = this.userData.conversations.slice(-100);
+    
+    // Fallback response system
+    generateFallbackResponse(message) {
+        const fallbacks = [
+            "I'm here to listen and support you. Could you tell me more about what you're feeling?",
+            "Thank you for sharing that with me. I want to understand better - what's been on your mind?",
+            "I hear you, and I'm here for you. How has this been affecting you?",
+            "Your feelings are important to me. Can you help me understand what you're experiencing?"
+        ];
+        return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    }
+    
+    updateUI() {
+        // Update stats in header
+        if (document.getElementById('crystalCount')) {
+            document.getElementById('crystalCount').textContent = this.userData.crystalCount;
+        }
+        if (document.getElementById('starCount')) {
+            document.getElementById('starCount').textContent = this.userData.starCount;
         }
         
-        this.saveUserData();
+        // Update companion info
+        if (document.getElementById('companionNameDisplay')) {
+            document.getElementById('companionNameDisplay').textContent = this.companion.name;
+        }
+        
+        if (document.getElementById('companionSprite')) {
+            document.getElementById('companionSprite').textContent = this.companion.character;
+        }
+        
+        // Update progress bar
+        const progressPercent = (this.userData.companionXP / this.userData.maxXP) * 100;
+        if (document.getElementById('trustProgress')) {
+            document.getElementById('trustProgress').style.width = `${progressPercent}%`;
+        }
+        
+        // Update level display
+        const userLevel = document.querySelector('.user-level');
+        if (userLevel) {
+            userLevel.textContent = `Lv ${this.userData.companionLevel}`;
+        }
+        
+        // Update stats in progress tab
+        if (document.getElementById('totalChats')) {
+            document.getElementById('totalChats').textContent = this.userData.totalConversations;
+        }
+        if (document.getElementById('totalInsights')) {
+            document.getElementById('totalInsights').textContent = this.userData.totalInsights;
+        }
+        if (document.getElementById('streakDays')) {
+            document.getElementById('streakDays').textContent = this.userData.streakDays;
+        }
+        if (document.getElementById('moodScore')) {
+            document.getElementById('moodScore').textContent = this.userData.moodScore;
+        }
+        
+        // Update companion traits
+        const personality = this.personalities[this.companion.personality];
+        const traitTags = document.querySelector('.trait-tags');
+        if (traitTags && personality) {
+            traitTags.innerHTML = personality.traits.map(trait => 
+                `<span class="trait-tag">${trait}</span>`
+            ).join('');
+        }
     }
-}
-
-// Enhanced Emotion Analysis
-class EmotionAnalyzer {
-    async analyze(message, mood) {
-        // Enhanced keyword-based analysis with more nuanced detection
-        const emotionKeywords = {
-            stress: {
-                keywords: ['stressed', 'overwhelmed', 'pressure', 'deadlines', 'work', 'exam', 'anxious', 'worried', 'panic'],
-                intensity: 1.0
-            },
-            anxiety: {
-                keywords: ['anxious', 'worried', 'nervous', 'panic', 'fear', 'scared', 'terrified', 'afraid'],
-                intensity: 0.9
-            },
-            sadness: {
-                keywords: ['sad', 'depressed', 'down', 'upset', 'crying', 'lonely', 'hurt', 'devastated', 'heartbroken'],
-                intensity: 0.8
-            },
-            anger: {
-                keywords: ['angry', 'mad', 'frustrated', 'annoyed', 'furious', 'rage', 'irritated', 'pissed'],
-                intensity: 0.9
-            },
-            happiness: {
-                keywords: ['happy', 'excited', 'great', 'amazing', 'wonderful', 'love', 'joy', 'thrilled', 'fantastic'],
-                intensity: 1.0
-            },
-            confusion: {
-                keywords: ['confused', 'lost', 'unsure', 'unclear', 'puzzled', 'bewildered', 'perplexed'],
-                intensity: 0.6
-            }
-        };
+    
+    updateAchievementsDisplay() {
+        const achievementsGrid = document.querySelector('.achievements-grid');
+        if (!achievementsGrid) return;
         
-        let detectedEmotion = mood || 'neutral';
-        let confidence = 0.5;
-        let intensity = 0.5;
-        
-        const messageLower = message.toLowerCase();
-        
-        // Check for emotion keywords
-        for (const [emotion, data] of Object.entries(emotionKeywords)) {
-            for (const keyword of data.keywords) {
-                if (messageLower.includes(keyword)) {
-                    detectedEmotion = emotion;
-                    confidence = 0.8;
-                    intensity = data.intensity;
+        achievementsGrid.innerHTML = this.achievements.map(achievement => {
+            const isUnlocked = this.userData.unlockedAchievements.includes(achievement.id);
+            let currentValue = 0;
+            
+            switch (achievement.type) {
+                case 'conversations':
+                    currentValue = this.userData.totalConversations;
                     break;
+                case 'streak':
+                    currentValue = this.userData.streakDays;
+                    break;
+                case 'level':
+                    currentValue = this.userData.companionLevel;
+                    break;
+                case 'ai_setup':
+                    currentValue = (this.brain && this.brain.gptEngine && this.brain.gptEngine.isConfigured()) ? 1 : 0;
+                    break;
+                default:
+                    currentValue = isUnlocked ? achievement.requirement : 0;
+                    break;
+            }
+            
+            return `
+                <div class="achievement-card ${isUnlocked ? 'unlocked' : 'locked'}">
+                    <div class="achievement-icon">${achievement.icon}</div>
+                    <div class="achievement-name">${achievement.name}</div>
+                    <div class="achievement-desc">${achievement.description}</div>
+                    <div class="achievement-progress">${Math.min(currentValue, achievement.requirement)}/${achievement.requirement}</div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    // Enhanced progress tab with AI statistics
+    updateProgressTab() {
+        if (!this.brain) return;
+        
+        const progressData = this.brain.getProgressData();
+        const insights = progressData.insights;
+        
+        // Update the existing stats
+        if (document.getElementById('totalChats')) {
+            document.getElementById('totalChats').textContent = progressData.totalConversations;
+        }
+        if (document.getElementById('totalInsights')) {
+            document.getElementById('totalInsights').textContent = this.userData.totalInsights;
+        }
+        
+        // Add insights section if not exists
+        let insightsSection = document.querySelector('.insights-section');
+        if (!insightsSection && insights.length > 0) {
+            insightsSection = document.createElement('div');
+            insightsSection.className = 'section insights-section';
+            insightsSection.innerHTML = `
+                <h3>Personal Insights</h3>
+                <div class="insights-container"></div>
+            `;
+            const progressSections = document.querySelector('.progress-sections');
+            if (progressSections) {
+                progressSections.appendChild(insightsSection);
+            }
+        }
+        
+        // Update insights
+        if (insightsSection && insights.length > 0) {
+            const container = insightsSection.querySelector('.insights-container');
+            container.innerHTML = insights.map(insight => `
+                <div class="insight-card">
+                    <span class="insight-icon">💡</span>
+                    <span class="insight-text">${insight}</span>
+                </div>
+            `).join('');
+        }
+    }
+    
+    // Enhanced welcome message
+    showWelcomeMessage() {
+        setTimeout(() => {
+            if (this.brain) {
+                const progressData = this.brain.getProgressData();
+                
+                let welcomeMessages;
+                if (progressData.totalConversations === 0) {
+                    // First time user
+                    welcomeMessages = [
+                        `🌟 Hello! I'm ${this.companion.name}, your personal emotional support companion. I'm genuinely excited to get to know you and be part of your journey.`,
+                        `💜 This is a completely safe space where you can share anything. I'll listen without judgment and help you discover insights about yourself. How are you feeling today?`
+                    ];
+                } else {
+                    // Returning user
+                    welcomeMessages = [
+                        `🌟 Welcome back! I've missed our conversations. We've talked ${progressData.totalConversations} times now, and I can see how much you've grown.`,
+                        `💜 I remember what we discussed before, and I'm here to continue supporting your journey. What's been on your mind since we last talked?`
+                    ];
                 }
+                
+                welcomeMessages.forEach((message, index) => {
+                    setTimeout(() => {
+                        this.addMessage('companion', message);
+                    }, index * 2500);
+                });
+            } else {
+                // Fallback welcome message
+                const welcomeMessages = [
+                    `🌟 Hello! I'm ${this.companion.name}, your personal emotional support companion. I'm here to listen and support you.`,
+                    `💜 This is a safe space where you can share anything. How are you feeling today?`
+                ];
+                
+                welcomeMessages.forEach((message, index) => {
+                    setTimeout(() => {
+                        this.addMessage('companion', message);
+                    }, index * 2000);
+                });
             }
-        }
-        
-        // Boost confidence if mood was explicitly selected
-        if (mood && mood !== 'neutral') {
-            confidence = Math.max(confidence, 0.9);
-        }
-        
-        // Analyze message length and punctuation for intensity
-        const exclamationCount = (message.match(/!/g) || []).length;
-        const capsCount = (message.match(/[A-Z]/g) || []).length;
-        
-        if (exclamationCount > 1 || capsCount > message.length * 0.3) {
-            intensity = Math.min(intensity + 0.2, 1.0);
-        }
-        
-        return {
-            emotion: detectedEmotion,
-            confidence: confidence,
-            intensity: intensity,
-            keywords: this.extractKeywords(message),
-            sentiment: this.analyzeSentiment(message)
-        };
+        }, 1000);
     }
     
-    extractKeywords(message) {
-        // Simple keyword extraction
-        const words = message.toLowerCase().split(/\s+/);
-        const stopWords = ['the', 'is', 'at', 'which', 'on', 'a', 'an', 'and', 'or', 'but', 'in', 'with', 'to', 'for', 'of', 'as', 'by'];
-        return words.filter(word => word.length > 3 && !stopWords.includes(word));
-    }
-    
-    analyzeSentiment(message) {
-        const positiveWords = ['good', 'great', 'amazing', 'wonderful', 'fantastic', 'love', 'happy', 'excited', 'awesome'];
-        const negativeWords = ['bad', 'terrible', 'awful', 'horrible', 'hate', 'sad', 'angry', 'frustrated', 'upset'];
+    showXPGainAnimation(xpAmount) {
+        const xpNotification = document.createElement('div');
+        xpNotification.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: var(--gradient-purple);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 18px;
+            z-index: 10000;
+            transition: all 0.5s ease;
+            box-shadow: var(--shadow-heavy);
+        `;
+        xpNotification.innerHTML = `
+            <div style="text-align: center;">
+                <div style="font-size: 24px; margin-bottom: 5px;">⭐</div>
+                <div>+${xpAmount} XP</div>
+                <div style="font-size: 12px; opacity: 0.8;">Meaningful conversation!</div>
+            </div>
+        `;
         
-        const messageLower = message.toLowerCase();
-        let score = 0;
+        document.body.appendChild(xpNotification);
         
-        positiveWords.forEach(word => {
-            if (messageLower.includes(word)) score += 1;
-        });
+        setTimeout(() => {
+            xpNotification.style.transform = 'translate(-50%, -50%) scale(1)';
+        }, 100);
         
-        negativeWords.forEach(word => {
-            if (messageLower.includes(word)) score -= 1;
-        });
-        
-        if (score > 0) return 'positive';
-        if (score < 0) return 'negative';
-        return 'neutral';
+        setTimeout(() => {
+            xpNotification.style.transform = 'translate(-50%, -50%) scale(0)';
+            setTimeout(() => xpNotification.remove(), 500);
+        }, 2000);
     }
 }
 
-// Pattern Recognition System
-class PatternRecognition {
-    analyzeEntry(message, analysis) {
-        return {
-            insights: this.generateInsights(analysis),
-            triggers: this.identifyTriggers(message),
-            themes: this.extractThemes(message)
-        };
-    }
-    
-    generateInsights(analysis) {
-        const insights = [];
-        
-        if (analysis.intensity > 0.8) {
-            insights.push("This seems to be a particularly intense experience for you.");
+// Add CSS animation for confetti
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes confettiFall {
+        0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 1;
         }
-        
-        if (analysis.emotion === 'stress' && analysis.confidence > 0.7) {
-            insights.push("I notice stress patterns in your message.");
+        100% {
+            transform: translateY(100vh) rotate(360deg);
+            opacity: 0;
         }
-        
-        return insights;
     }
-    
-    identifyTriggers(message) {
-        const commonTriggers = ['work', 'school', 'family', 'relationship', 'money', 'health'];
-        const messageLower = message.toLowerCase();
-        
-        return commonTriggers.filter(trigger => messageLower.includes(trigger));
-    }
-    
-    extractThemes(message) {
-        // Simple theme extraction based on common life areas
-        const themes = {
-            work: ['job', 'work', 'boss', 'colleague', 'office', 'career'],
-            relationships: ['boyfriend', 'girlfriend', 'partner', 'friend', 'family'],
-            health: ['sick', 'tired', 'energy', 'sleep', 'exercise'],
-            education: ['school', 'college', 'exam', 'study', 'grade']
-        };
-        
-        const messageLower = message.toLowerCase();
-        const detectedThemes = [];
-        
-        for (const [theme, keywords] of Object.entries(themes)) {
-            if (keywords.some(keyword => messageLower.includes(keyword))) {
-                detectedThemes.push(theme);
-            }
-        }
-        
-        return detectedThemes;
+`;
+document.head.appendChild(style);
+
+// GLOBAL FUNCTIONS - These are attached to window so HTML can access them
+function startJourney() {
+    console.log('Start Journey clicked');
+    const modal = document.getElementById('characterModal');
+    if (modal) {
+        modal.classList.add('active');
+        console.log('Modal should be visible now');
+    } else {
+        console.error('Character modal not found');
     }
 }
 
-// Memory System
-class MemorySystem {
-    findRelevantMemories(analysis, patterns) {
-        // Placeholder for future implementation
-        return [];
-    }
+function learnMore() {
+    alert('VentBuddy is your personal AI companion designed to support your emotional wellbeing through meaningful conversations, pattern recognition, and personalized guidance.');
 }
 
-// Initialize the application when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🌟 VentBuddy initialized successfully!');
-    initializeCharacterDropdown();
-    initializeNameInput();
+function createCompanion() {
+    console.log('Create Companion clicked');
+    
+    // Wait for app if not ready
+    if (!window.ventbuddyApp) {
+        console.log('App not ready, waiting...');
+        setTimeout(createCompanion, 100);
+        return;
+    }
+    
+    const nameInput = document.getElementById('companionName');
+    const selectedCard = document.querySelector('.character-card.active');
+    
+    console.log('Selected card:', selectedCard);
+    console.log('Name input:', nameInput ? nameInput.value : 'not found');
+    
+    if (selectedCard) {
+        window.ventbuddyApp.companion.character = selectedCard.dataset.character;
+        window.ventbuddyApp.companion.name = selectedCard.dataset.name;
+        window.ventbuddyApp.companion.personality = selectedCard.dataset.personality;
+        console.log('Updated companion:', window.ventbuddyApp.companion);
+    }
+    
+    if (nameInput && nameInput.value.trim()) {
+        window.ventbuddyApp.companion.name = nameInput.value.trim();
+    }
+    
+    // Initialize the enhanced brain
+    if (window.ventbuddyApp.initializeBrain) {
+        window.ventbuddyApp.initializeBrain();
+    }
+    
+    // Close modal and show app
+    const characterModal = document.getElementById('characterModal');
+    const landingPage = document.getElementById('landingPage');
+    const appInterface = document.getElementById('appInterface');
+    
+    console.log('Transitioning UI...');
+    
+    if (characterModal) {
+        characterModal.classList.remove('active');
+        console.log('Modal closed');
+    }
+    if (landingPage) {
+        landingPage.style.display = 'none';
+        console.log('Landing page hidden');
+    }
+    if (appInterface) {
+        appInterface.classList.add('active');
+        console.log('App interface shown');
+    }
+    
+    // Update UI with companion info
+    window.ventbuddyApp.updateUI();
+    
+    // Show enhanced welcome message
+    window.ventbuddyApp.showWelcomeMessage();
+    
+    console.log('Companion creation complete!');
+}
+
+// Make functions global so HTML can access them
+window.startJourney = startJourney;
+window.learnMore = learnMore;
+window.createCompanion = createCompanion;
+
+// Initialize app when DOM loads
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, initializing VentBuddy...');
+    window.ventbuddyApp = new VentBuddy();
+    console.log('🧙‍♂️ VentBuddy initialized successfully!');
 });
